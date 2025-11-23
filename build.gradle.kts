@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-group = "org.itmo"
+group = "org.quicklybly.dumbmq"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -11,19 +11,22 @@ repositories {
 }
 
 dependencies {
-    implementation("javax.jms:jms-api:2.0.1")
-    implementation("org.apache.activemq:activemq-broker:6.1.1")
+//    implementation("javax.jms:jms-api:2.0.1")
+//    implementation("org.apache.activemq:activemq-broker:6.1.1")
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks {
+    test {
+        useJUnitPlatform()
+    }
+
+    wrapper {
+        gradleVersion = "8.14.10"
+        distributionType = Wrapper.DistributionType.BIN
+    }
 }
 
 kotlin {
-    jvmToolchain(8)
-}
-
-application {
-    mainClass.set("MainKt")
+    jvmToolchain(21)
 }
