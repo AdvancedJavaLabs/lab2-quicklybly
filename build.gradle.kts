@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.spring") version kotlinVersion
 
     id("org.springframework.boot") version "3.4.5"
+    id("io.spring.dependency-management") version "1.1.0"
     application
 }
 
@@ -15,8 +16,17 @@ repositories {
 }
 
 dependencies {
-//    implementation("javax.jms:jms-api:2.0.1")
-//    implementation("org.apache.activemq:activemq-broker:6.1.1")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testImplementation("org.assertj:assertj-core:3.24.2")

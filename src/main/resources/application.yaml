@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: dumbmq
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+
+server:
+  port: 8080
+  servlet:
+    context-path: /${spring.application.name}
