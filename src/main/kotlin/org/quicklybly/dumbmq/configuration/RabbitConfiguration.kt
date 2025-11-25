@@ -2,6 +2,7 @@ package org.quicklybly.dumbmq.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
+import org.quicklybly.dumbmq.service.JobStorage
 import org.springframework.amqp.core.AcknowledgeMode
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
@@ -17,18 +18,22 @@ import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
 object RabbitMqConstants {
+    const val INIT_EXCHANGE = "init.exchange"
     const val TASK_EXCHANGE = "task.exchange"
     const val WORKER_CONTROL_EXCHANGE = "worker.control.exchange"
     const val AGGREGATOR_CONTROL_EXCHANGE = "aggregator.control.exchange"
 
+    const val INIT_QUEUE = "init.queue"
     const val TASKS_QUEUE = "tasks.queue"
     const val WORKER_CONTROL_QUEUE = "worker.control.queue"
     const val AGGREGATOR_CONTROL_QUEUE = "aggregator.control.queue"
 
+    const val INIT_ROUTING_KEY = "init"
     const val TASK_ROUTING_KEY = "task"
 }
 
@@ -37,6 +42,11 @@ object RabbitMqConstants {
 class RabbitConfiguration {
 
     // Exchanges
+    @Bean(RabbitMqConstants.INIT_EXCHANGE)
+    fun initExchange(): DirectExchange {
+        return DirectExchange(RabbitMqConstants.INIT_EXCHANGE)
+    }
+
     @Bean(RabbitMqConstants.TASK_EXCHANGE)
     fun taskExchange(): DirectExchange {
         return DirectExchange(RabbitMqConstants.TASK_EXCHANGE)
@@ -53,6 +63,11 @@ class RabbitConfiguration {
     }
 
     // Queues
+    @Bean(RabbitMqConstants.INIT_QUEUE)
+    fun initQueue(): Queue {
+        return Queue(RabbitMqConstants.INIT_QUEUE)
+    }
+
     @Bean(RabbitMqConstants.TASKS_QUEUE)
     fun tasksQueue(): Queue {
         return Queue(RabbitMqConstants.TASKS_QUEUE)
@@ -69,6 +84,17 @@ class RabbitConfiguration {
     }
 
     // Bindings
+    @Bean
+    fun initBinding(
+        @Qualifier(RabbitMqConstants.INIT_EXCHANGE) initExchange: DirectExchange,
+        @Qualifier(RabbitMqConstants.INIT_QUEUE) initQueue: Queue,
+    ): Binding {
+        return BindingBuilder
+            .bind(initQueue)
+            .to(initExchange)
+            .with(RabbitMqConstants.INIT_ROUTING_KEY)
+    }
+
     @Bean
     fun taskBinding(
         @Qualifier(RabbitMqConstants.TASK_EXCHANGE) taskExchange: DirectExchange,
@@ -122,15 +148,21 @@ class RabbitConfiguration {
     @Bean
     fun rabbitTemplate(
         connectionFactory: ConnectionFactory,
-        messageConverter: MessageConverter
+        messageConverter: MessageConverter,
+        jobStorage: JobStorage,
     ): RabbitTemplate {
         return RabbitTemplate(connectionFactory).apply {
             this.messageConverter = messageConverter
             setMandatory(true)
 
-            setConfirmCallback { _, ack, cause ->
+            setConfirmCallback { correlationData, ack, cause ->
                 if (!ack) {
                     logger.error { "Message not delivered: $cause" }
+
+                    if (correlationData != null) {
+                        val jobId = correlationData.id
+                        jobStorage.removeJob(UUID.fromString(jobId))
+                    }
                 }
             }
 
