@@ -28,6 +28,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+    val stanfordNlpVersion = "4.5.4"
+    implementation("edu.stanford.nlp:stanford-corenlp:$stanfordNlpVersion")
+    implementation("edu.stanford.nlp:stanford-corenlp:$stanfordNlpVersion:models")
+
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
@@ -35,6 +39,7 @@ dependencies {
 
 tasks {
     test {
+        jvmArgs("-Xmx8g")
         useJUnitPlatform()
     }
 
