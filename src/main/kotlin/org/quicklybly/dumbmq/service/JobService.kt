@@ -25,7 +25,7 @@ class JobService(
                 RabbitMqConstants.INIT_EXCHANGE,
                 RabbitMqConstants.INIT_ROUTING_KEY,
                 JobInitDto(
-                    jobId = jobId.toString(),
+                    jobId = jobId,
                     fileUrls = request.fileUrls,
                 ),
                 correlation,
