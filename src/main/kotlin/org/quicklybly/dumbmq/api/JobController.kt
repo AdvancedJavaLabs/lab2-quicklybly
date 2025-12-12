@@ -4,6 +4,10 @@ import jakarta.validation.Valid
 import org.quicklybly.dumbmq.api.dto.JobRequest
 import org.quicklybly.dumbmq.api.dto.JobResponse
 import org.quicklybly.dumbmq.service.JobService
+import org.springframework.core.io.Resource
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,7 +26,12 @@ class JobController(private val jobService: JobService) {
     }
 
     @GetMapping("/{jobId}")
-    fun getReport(@PathVariable jobId: UUID) {
+    fun getReport(@PathVariable jobId: UUID): ResponseEntity<Resource> {
+        val report = jobService.getReport(jobId)
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report-$jobId.json")
+            .contentType(MediaType.TEXT_PLAIN)
+            .body(report)
 
     }
 }

@@ -24,5 +24,6 @@ dumbmq:
       - '?'
     buffer-size: 8192
   worker:
-    count: 2
-
+    count: 10
+  metrics:
+    number-of-top-words: 20

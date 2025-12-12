@@ -4,5 +4,6 @@ import java.util.UUID
 
 data class SentenceTaskDto(
     val jobId: UUID,
+    val chunkId: Long,
     val sentence: String,
 )

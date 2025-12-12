@@ -39,6 +39,8 @@ class WorkerConfiguration : BeanDefinitionRegistryPostProcessor, EnvironmentAwar
                 .genericBeanDefinition(Worker::class.java)
                 .addConstructorArgValue(workerId)
                 .addConstructorArgReference("rabbitTemplate")
+                .addConstructorArgReference("textAnalyzer")
+                .addConstructorArgReference("nlpService")
                 .setScope(BeanDefinition.SCOPE_SINGLETON)
                 .beanDefinition
 

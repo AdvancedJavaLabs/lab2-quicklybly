@@ -19,7 +19,8 @@ class NlpService(private val pipeline: StanfordCoreNLP) {
 
         for (entity in entities) {
             val name = entity.text()
-            val regex = Regex("\\b$name\\b")
+            val escapedName = Regex.escape(name)
+            val regex = Regex("\\b$escapedName\\b")
             result = regex.replace(result, NAME_PLACEHOLDER)
         }
 

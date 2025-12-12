@@ -25,12 +25,12 @@ private val logger = KotlinLogging.logger {}
 object RabbitMqConstants {
     const val INIT_EXCHANGE = "init.exchange"
     const val TASK_EXCHANGE = "task.exchange"
-    const val WORKER_CONTROL_EXCHANGE = "worker.control.exchange"
+    const val AGGREGATOR_TASK_EXCHANGE = "aggregator.task.exchange"
     const val AGGREGATOR_CONTROL_EXCHANGE = "aggregator.control.exchange"
 
     const val INIT_QUEUE = "init.queue"
     const val TASKS_QUEUE = "tasks.queue"
-    const val WORKER_CONTROL_QUEUE = "worker.control.queue"
+    const val AGGREGATOR_TASK_QUEUE = "aggregator.task.queue"
     const val AGGREGATOR_CONTROL_QUEUE = "aggregator.control.queue"
 
     const val INIT_ROUTING_KEY = "init"
@@ -52,9 +52,9 @@ class RabbitConfiguration {
         return DirectExchange(RabbitMqConstants.TASK_EXCHANGE)
     }
 
-    @Bean(RabbitMqConstants.WORKER_CONTROL_EXCHANGE)
-    fun workerControlExchange(): FanoutExchange {
-        return FanoutExchange(RabbitMqConstants.WORKER_CONTROL_EXCHANGE)
+    @Bean(RabbitMqConstants.AGGREGATOR_TASK_EXCHANGE)
+    fun aggregatorTaskExchange(): FanoutExchange {
+        return FanoutExchange(RabbitMqConstants.AGGREGATOR_TASK_EXCHANGE)
     }
 
     @Bean(RabbitMqConstants.AGGREGATOR_CONTROL_EXCHANGE)
@@ -73,9 +73,9 @@ class RabbitConfiguration {
         return Queue(RabbitMqConstants.TASKS_QUEUE)
     }
 
-    @Bean(RabbitMqConstants.WORKER_CONTROL_QUEUE)
-    fun workerControlQueue(): Queue {
-        return Queue(RabbitMqConstants.WORKER_CONTROL_QUEUE)
+    @Bean(RabbitMqConstants.AGGREGATOR_TASK_QUEUE)
+    fun aggregatorTaskQueue(): Queue {
+        return Queue(RabbitMqConstants.AGGREGATOR_TASK_QUEUE)
     }
 
     @Bean(RabbitMqConstants.AGGREGATOR_CONTROL_QUEUE)
@@ -107,13 +107,13 @@ class RabbitConfiguration {
     }
 
     @Bean
-    fun workerControlBinding(
-        @Qualifier(RabbitMqConstants.WORKER_CONTROL_EXCHANGE) workerControlExchange: FanoutExchange,
-        @Qualifier(RabbitMqConstants.WORKER_CONTROL_QUEUE) workerControlQueue: Queue,
+    fun aggregatorTaskBinding(
+        @Qualifier(RabbitMqConstants.AGGREGATOR_TASK_EXCHANGE) aggregatorTaskExchange: FanoutExchange,
+        @Qualifier(RabbitMqConstants.AGGREGATOR_TASK_QUEUE) aggregatorTaskQueue: Queue,
     ): Binding {
         return BindingBuilder
-            .bind(workerControlQueue)
-            .to(workerControlExchange)
+            .bind(aggregatorTaskQueue)
+            .to(aggregatorTaskExchange)
     }
 
     @Bean
