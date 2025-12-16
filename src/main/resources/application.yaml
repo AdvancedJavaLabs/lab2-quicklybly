@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: dumbmq
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+
+server:
+  port: 8080
+  servlet:
+    context-path: /${spring.application.name}
+
+dumbmq:
+  splitter:
+    max-chunk-size: 10000
+    sentence-terminators:
+      - '.'
+      - '!'
+      - '?'
+    buffer-size: 8192
+  worker:
+    count: 10
+  metrics:
+    number-of-top-words: 20
